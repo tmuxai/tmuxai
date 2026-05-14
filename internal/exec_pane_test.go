@@ -5,8 +5,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/alvinunreal/tmuxai/config"
-	"github.com/alvinunreal/tmuxai/system"
+	"github.com/tmuxai/tmuxai/config"
+	"github.com/tmuxai/tmuxai/system"
 	"github.com/stretchr/testify/assert"
 )
 

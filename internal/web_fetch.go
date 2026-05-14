@@ -16,7 +16,7 @@ import (
 	htmltomd "github.com/JohannesKaufmann/html-to-markdown/v2"
 	"github.com/mackee/go-readability"
 
-	"github.com/alvinunreal/tmuxai/logger"
+	"github.com/tmuxai/tmuxai/logger"
 )
 
 const (

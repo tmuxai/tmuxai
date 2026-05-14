@@ -10,8 +10,8 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/alvinunreal/tmuxai/config"
-	"github.com/alvinunreal/tmuxai/logger"
+	"github.com/tmuxai/tmuxai/config"
+	"github.com/tmuxai/tmuxai/logger"
 	"gopkg.in/yaml.v3"
 )
 

@@ -15,7 +15,7 @@ import (
 
 	mcpsdk "github.com/modelcontextprotocol/go-sdk/mcp"
 
-	"github.com/alvinunreal/tmuxai/logger"
+	"github.com/tmuxai/tmuxai/logger"
 )
 
 type MCPManager struct {

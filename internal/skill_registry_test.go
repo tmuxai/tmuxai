@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/alvinunreal/tmuxai/config"
+	"github.com/tmuxai/tmuxai/config"
 )
 
 // =====================================================================

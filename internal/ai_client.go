@@ -14,8 +14,8 @@ import (
 
 	copilot "github.com/github/copilot-sdk/go"
 
-	"github.com/alvinunreal/tmuxai/config"
-	"github.com/alvinunreal/tmuxai/logger"
+	"github.com/tmuxai/tmuxai/config"
+	"github.com/tmuxai/tmuxai/logger"
 	"google.golang.org/genai"
 
 	bedrockruntime "github.com/aws/aws-sdk-go-v2/service/bedrockruntime"
@@ -437,7 +437,7 @@ func (c *AiClient) ChatCompletion(ctx context.Context, messages []Message, model
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set(apiKeyHeader, apiKey)
 
-	req.Header.Set("HTTP-Referer", "https://github.com/alvinunreal/tmuxai")
+	req.Header.Set("HTTP-Referer", "https://github.com/tmuxai/tmuxai")
 	req.Header.Set("X-Title", "TmuxAI")
 
 	// Log the request details for debugging before sending
@@ -562,7 +562,7 @@ func (c *AiClient) Response(ctx context.Context, messages []Message, model strin
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Authorization", "Bearer "+apiKey)
 
-	req.Header.Set("HTTP-Referer", "https://github.com/alvinunreal/tmuxai")
+	req.Header.Set("HTTP-Referer", "https://github.com/tmuxai/tmuxai")
 	req.Header.Set("X-Title", "TmuxAI")
 
 	// Log the request details for debugging before sending

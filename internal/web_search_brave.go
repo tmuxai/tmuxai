@@ -9,7 +9,7 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/alvinunreal/tmuxai/logger"
+	"github.com/tmuxai/tmuxai/logger"
 )
 
 // BraveProvider adapts the Brave Search API to WebSearchProvider.

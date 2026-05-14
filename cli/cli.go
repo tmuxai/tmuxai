@@ -9,9 +9,9 @@ import (
 	"strings"
 	"syscall"
 
-	"github.com/alvinunreal/tmuxai/config"
-	"github.com/alvinunreal/tmuxai/internal"
-	"github.com/alvinunreal/tmuxai/logger"
+	"github.com/tmuxai/tmuxai/config"
+	"github.com/tmuxai/tmuxai/internal"
+	"github.com/tmuxai/tmuxai/logger"
 	"github.com/spf13/cobra"
 )
 

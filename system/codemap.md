@@ -28,5 +28,5 @@
 ## Integration Points
 - External binaries: `tmux` is the primary dependency; commands used include `list-panes`, `capture-pane`, `send-keys`, `split-window`, `clear-history`, `kill-pane`, `new-session`, `attach-session`, `current-pid command lookup` flows via `ps`, `pgrep` in `GetProcessArgs`.
 - Third-party libs: `github.com/fatih/color` for terminal colors, `github.com/alecthomas/chroma/*` for syntax highlighting.
-- Internal dependency: `github.com/alvinunreal/tmuxai/logger` for error/debug logging.
+- Internal dependency: `github.com/tmuxai/tmuxai/logger` for error/debug logging.
 - Environment/config integration: reads `TMUX_PANE` (`TmuxCurrentPaneId`) and uses runtime/OS info helpers for pane metadata.

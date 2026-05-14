@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"regexp"
 
-	"github.com/alvinunreal/tmuxai/logger"
+	"github.com/tmuxai/tmuxai/logger"
 )
 
 type MCPToolCall struct {

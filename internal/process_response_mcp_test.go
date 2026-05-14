@@ -4,7 +4,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/alvinunreal/tmuxai/internal/mcp"
+	"github.com/tmuxai/tmuxai/internal/mcp"
 )
 
 func TestParseAIResponse_MCPToolCall(t *testing.T) {

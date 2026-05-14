@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/alvinunreal/tmuxai/cli"
-	"github.com/alvinunreal/tmuxai/logger"
+	"github.com/tmuxai/tmuxai/cli"
+	"github.com/tmuxai/tmuxai/logger"
 )
 
 func main() {

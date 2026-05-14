@@ -6,7 +6,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/alvinunreal/tmuxai/internal/mcp"
+	"github.com/tmuxai/tmuxai/internal/mcp"
 )
 
 // Pre-compiled regex patterns for each XML tag, avoiding recompilation per response.

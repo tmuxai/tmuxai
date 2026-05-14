@@ -9,7 +9,7 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"github.com/alvinunreal/tmuxai/logger"
+	"github.com/tmuxai/tmuxai/logger"
 )
 
 var htmlTagRegex = regexp.MustCompile(`<[^>]+>`)

@@ -9,7 +9,7 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/alvinunreal/tmuxai/logger"
+	"github.com/tmuxai/tmuxai/logger"
 )
 
 // SearXNGProvider adapts a self-hosted SearXNG instance to WebSearchProvider.

@@ -8,8 +8,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/alvinunreal/tmuxai/logger"
-	"github.com/alvinunreal/tmuxai/system"
+	"github.com/tmuxai/tmuxai/logger"
+	"github.com/tmuxai/tmuxai/system"
 )
 
 // GetAvailablePane finds an available pane or creates a new one if none are available

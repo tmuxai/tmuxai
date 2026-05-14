@@ -28,8 +28,8 @@
 8. `mgr.Start(initMessage)` transfers control to the interactive loop; CLI layer no longer manages domain logic.
 
 ## Integration Points
-- `github.com/alvinunreal/tmuxai/config`: reads effective config and environment overrides via `config.Load(...)`.
-- `github.com/alvinunreal/tmuxai/internal`: constructs and drives the runtime `Manager` and calls high-level methods for KB loading, model switching, and session execution.
-- `github.com/alvinunreal/tmuxai/logger`: structured runtime logging for config/mode/bootstrap and error reporting.
+- `github.com/tmuxai/tmuxai/config`: reads effective config and environment overrides via `config.Load(...)`.
+- `github.com/tmuxai/tmuxai/internal`: constructs and drives the runtime `Manager` and calls high-level methods for KB loading, model switching, and session execution.
+- `github.com/tmuxai/tmuxai/logger`: structured runtime logging for config/mode/bootstrap and error reporting.
 - `github.com/spf13/cobra`: provides command framework, flag binding, and parsing.
 - `main.go`: only consumer of `cli.Execute()`, keeping CLI package as the terminal API boundary.

@@ -10,8 +10,8 @@ import (
 	bedrockruntime "github.com/aws/aws-sdk-go-v2/service/bedrockruntime"
 	brtypes "github.com/aws/aws-sdk-go-v2/service/bedrockruntime/types"
 
-	"github.com/alvinunreal/tmuxai/config"
-	"github.com/alvinunreal/tmuxai/logger"
+	"github.com/tmuxai/tmuxai/config"
+	"github.com/tmuxai/tmuxai/logger"
 )
 
 // defaultBedrockMaxTokens is used when the user hasn't configured max_tokens.
