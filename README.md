@@ -17,7 +17,7 @@
     <br/>
     <br/>
     <a href="https://tmuxai.tech"><img src="https://img.shields.io/badge/tmuxai.tech-111111?style=for-the-badge&logo=vercel&logoColor=white" alt="tmuxai.tech"></a>&nbsp;
-    <a href="https://x.com/tmuxai"><img src="https://img.shields.io/badge/X-@tmuxai-000000?style=for-the-badge&logo=x&logoColor=white" alt="X @tmuxai"></a>&nbsp;
+    <a href="https://x.com/termuxai"><img src="https://img.shields.io/badge/X-@tmuxai-000000?style=for-the-badge&logo=x&logoColor=white" alt="X @tmuxai"></a>&nbsp;
     <a href="https://t.me/tmxuaitech"><img src="https://img.shields.io/badge/Telegram-Join%20channel-2CA5E0?style=for-the-badge&logo=telegram&logoColor=white" alt="Telegram Join channel"></a>
     <br/>
     <br/>
