@@ -1,0 +1,133 @@
+// cli.go: Command-line interface for TmuxAI, including root command and flags
+
+package cli
+
+import (
+	"fmt"
+	"os"
+	"os/signal"
+	"strings"
+	"syscall"
+
+	"github.com/alvinunreal/tmuxai/config"
+	"github.com/alvinunreal/tmuxai/internal"
+	"github.com/alvinunreal/tmuxai/logger"
+	"github.com/spf13/cobra"
+)
+
+var (
+	initMessage    string
+	taskFileFlag   string
+	kbFlag         string
+	modelFlag      string
+	execPaneFlag   string
+	readPanesFlag  string
+	yoloFlag       bool
+	configFileFlag string
+)
+
+var rootCmd = &cobra.Command{
+	Use:   "tmuxai [request message]",
+	Short: "TmuxAI - AI-Powered Tmux Companion",
+	Long:  `TmuxAI - AI-Powered Tmux Companion`,
+	PersistentPreRun: func(cmd *cobra.Command, args []string) {
+		if v, _ := cmd.Flags().GetBool("version"); v {
+			fmt.Printf("tmuxai version: %s\ncommit: %s\nbuild date: %s\n", internal.Version, internal.Commit, internal.Date)
+			os.Exit(0)
+		}
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		cfg, err := config.Load(configFileFlag)
+		if err != nil {
+			logger.Error("Error loading configuration: %v", err)
+			fmt.Fprintf(os.Stderr, "Error loading configuration: %v\n", err)
+			os.Exit(1)
+		}
+
+		if len(args) > 0 {
+			initMessage = strings.Join(args, " ")
+		}
+
+		if taskFileFlag != "" {
+			content, err := os.ReadFile(taskFileFlag)
+			if err != nil {
+				logger.Error("Error reading task file: %v", err)
+				fmt.Fprintf(os.Stderr, "Error reading task file: %v\n", err)
+				os.Exit(1)
+			}
+			initMessage = string(content)
+			logger.Info("Read request from file: %s", taskFileFlag)
+		}
+
+		managerOptions := internal.ManagerOptions{
+			ForcedExecPaneID: strings.TrimSpace(execPaneFlag),
+		}
+		if readPanesFlag != "" {
+			for _, paneID := range strings.Split(readPanesFlag, ",") {
+				paneID = strings.TrimSpace(paneID)
+				if paneID == "" {
+					continue
+				}
+				managerOptions.ForcedReadPaneIDs = append(managerOptions.ForcedReadPaneIDs, paneID)
+			}
+		}
+
+		mgr, err := internal.NewManager(cfg, managerOptions)
+		if err != nil {
+			logger.Error("manager.NewManager failed: %v", err)
+			os.Exit(1)
+		}
+		defer mgr.Cleanup()
+
+		// Register process-level signal handler for graceful MCP shutdown
+		sigChan := make(chan os.Signal, 1)
+		signal.Notify(sigChan, syscall.SIGTERM, syscall.SIGHUP)
+		go func() {
+			sig := <-sigChan
+			logger.Info("Received signal %v, cleaning up...", sig)
+			mgr.Cleanup()
+			os.Exit(0)
+		}()
+
+		// Load knowledge bases from CLI flag
+		if kbFlag != "" {
+			kbNames := strings.Split(kbFlag, ",")
+			mgr.LoadKBsFromCLI(kbNames)
+		}
+
+		// Set model from CLI flag
+		if modelFlag != "" {
+			mgr.SetModelsDefault(modelFlag)
+			logger.Info("Set model from CLI flag: %s", modelFlag)
+		}
+
+		if yoloFlag {
+			mgr.SessionOverrides["yolo"] = true
+			logger.Info("Yolo mode enabled: skipping all confirmation prompts")
+		}
+
+		if initMessage != "" {
+			logger.Info("Starting with initial subcommand: %s", initMessage)
+		}
+
+		if err := mgr.Start(initMessage); err != nil {
+			logger.Error("manager.Start failed: %v", err)
+			os.Exit(1)
+		}
+	},
+}
+
+func init() {
+	rootCmd.Flags().StringVarP(&taskFileFlag, "file", "f", "", "Read request from specified file")
+	rootCmd.Flags().StringVar(&kbFlag, "kb", "", "Comma-separated list of knowledge bases to load (e.g., --kb docker,git)")
+	rootCmd.Flags().StringVar(&modelFlag, "model", "", "AI model configuration to use (e.g., --model gpt4)")
+	rootCmd.Flags().StringVar(&execPaneFlag, "exec-pane", "", "Use the specified tmux pane ID as the exec pane (e.g., --exec-pane %3)")
+	rootCmd.Flags().StringVar(&readPanesFlag, "read-panes", "", "Comma-separated tmux pane IDs to use as read context (e.g., --read-panes %1,%2)")
+	rootCmd.Flags().BoolVar(&yoloFlag, "yolo", false, "Skip all confirmation prompts and execute commands directly")
+	rootCmd.Flags().BoolP("version", "v", false, "Print version information")
+	rootCmd.Flags().StringVar(&configFileFlag, "config", "", "Path to config file (overrides default ~/.config/tmuxai/config.yaml, also settable via TMUXAI_CONFIG env var)")
+}
+
+func Execute() error {
+	return rootCmd.Execute()
+}

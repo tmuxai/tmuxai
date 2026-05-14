@@ -1,0 +1,508 @@
+package internal
+
+import (
+	"context"
+	"net/http"
+	"net/http/httptest"
+	"testing"
+
+	"github.com/alvinunreal/tmuxai/config"
+	"github.com/aws/aws-sdk-go-v2/aws"
+)
+
+func TestAzureOpenAIEndpoint(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/openai/deployments/test-dep/chat/completions" {
+			t.Errorf("unexpected path: %s", r.URL.Path)
+		}
+		if r.URL.Query().Get("api-version") != "2025-04-01-preview" {
+			t.Errorf("missing api-version query")
+		}
+		if r.Header.Get("api-key") != "test-key" {
+			t.Errorf("missing api-key header")
+		}
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(`{"choices":[{"message":{"content":"ok"}}]}`))
+	}))
+	defer server.Close()
+
+	cfg := &config.Config{
+		OpenRouter: config.OpenRouterConfig{},
+		OpenAI:     config.OpenAIConfig{},
+		AzureOpenAI: config.AzureOpenAIConfig{
+			APIKey:         "test-key",
+			APIBase:        server.URL,
+			APIVersion:     "2025-04-01-preview",
+			DeploymentName: "test-dep",
+		},
+	}
+
+	client := NewAiClient(cfg)
+	msg := []Message{{Role: "user", Content: "hi"}}
+	resp, err := client.ChatCompletion(context.Background(), msg, "model")
+	if err != nil {
+		t.Fatalf("ChatCompletion error: %v", err)
+	}
+	if resp != "ok" {
+		t.Errorf("unexpected response: %s", resp)
+	}
+}
+
+func TestOpenAIResponsesEndpoint(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/responses" {
+			t.Errorf("unexpected path: %s", r.URL.Path)
+		}
+		if r.Header.Get("Authorization") != "Bearer test-key" {
+			t.Errorf("missing Authorization header: %s", r.Header.Get("Authorization"))
+		}
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(`{"output_text":"ok from responses api","id":"test-id","object":"response","created_at":1234567890}`))
+	}))
+	defer server.Close()
+
+	cfg := &config.Config{
+		OpenRouter: config.OpenRouterConfig{},
+		OpenAI: config.OpenAIConfig{
+			APIKey:  "test-key",
+			Model:   "gpt-5",
+			BaseURL: server.URL,
+		},
+		AzureOpenAI: config.AzureOpenAIConfig{},
+	}
+
+	client := NewAiClient(cfg)
+	msg := []Message{{Role: "user", Content: "hi"}}
+	resp, err := client.Response(context.Background(), msg, "gpt-5")
+	if err != nil {
+		t.Fatalf("Response error: %v", err)
+	}
+	if resp != "ok from responses api" {
+		t.Errorf("unexpected response: %s", resp)
+	}
+}
+
+func TestOpenAIResponsesEndpointWithSystemMessage(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/responses" {
+			t.Errorf("unexpected path: %s", r.URL.Path)
+		}
+		if r.Header.Get("Authorization") != "Bearer test-key" {
+			t.Errorf("missing Authorization header")
+		}
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(`{"output":[{"type":"message","status":"completed","content":[{"type":"text","text":"ok with system instruction"}]}],"output_text":"ok with system instruction"}`))
+	}))
+	defer server.Close()
+
+	cfg := &config.Config{
+		OpenRouter: config.OpenRouterConfig{},
+		OpenAI: config.OpenAIConfig{
+			APIKey:  "test-key",
+			Model:   "gpt-5-codex",
+			BaseURL: server.URL,
+		},
+		AzureOpenAI: config.AzureOpenAIConfig{},
+	}
+
+	client := NewAiClient(cfg)
+	msg := []Message{
+		{Role: "system", Content: "You are a helpful assistant"},
+		{Role: "user", Content: "hi"},
+	}
+	resp, err := client.Response(context.Background(), msg, "gpt-5-codex")
+	if err != nil {
+		t.Fatalf("Response error: %v", err)
+	}
+	if resp != "ok with system instruction" {
+		t.Errorf("unexpected response: %s", resp)
+	}
+}
+
+func TestDetermineAPIType(t *testing.T) {
+	cfg := &config.Config{
+		OpenRouter: config.OpenRouterConfig{
+			APIKey: "openrouter-key",
+			Model:  "openrouter-model",
+		},
+		OpenAI: config.OpenAIConfig{
+			APIKey: "openai-key",
+			Model:  "gpt-5-codex",
+		},
+		AzureOpenAI: config.AzureOpenAIConfig{},
+	}
+
+	client := NewAiClient(cfg)
+
+	// Test OpenAI API type (highest priority) - should work with any model when OpenAI key is present
+	apiType := client.determineAPIType("gpt-5-codex")
+	if apiType != "responses" {
+		t.Errorf("expected 'responses', got %s", apiType)
+	}
+
+	// Test that OpenAI is selected regardless of model when API key is present
+	apiType = client.determineAPIType("any-model")
+	if apiType != "responses" {
+		t.Errorf("expected 'responses' for any model when OpenAI key is present, got %s", apiType)
+	}
+
+	// Test Azure API type
+	cfg.OpenAI.APIKey = ""
+	cfg.AzureOpenAI.APIKey = "azure-key"
+	client = NewAiClient(cfg)
+	apiType = client.determineAPIType("any-model")
+	if apiType != "azure" {
+		t.Errorf("expected 'azure', got %s", apiType)
+	}
+
+	// Test OpenRouter API type (default)
+	cfg.AzureOpenAI.APIKey = ""
+	client = NewAiClient(cfg)
+	apiType = client.determineAPIType("openrouter-model")
+	if apiType != "openrouter" {
+		t.Errorf("expected 'openrouter', got %s", apiType)
+	}
+}
+
+func TestSessionOverrides(t *testing.T) {
+	cfg := &config.Config{
+		OpenRouter: config.OpenRouterConfig{
+			APIKey: "original-openrouter-key",
+			Model:  "original-openrouter-model",
+		},
+		OpenAI: config.OpenAIConfig{
+			APIKey: "original-openai-key",
+			Model:  "original-openai-model",
+		},
+		AzureOpenAI: config.AzureOpenAIConfig{
+			APIKey:         "original-azure-key",
+			DeploymentName: "original-deployment",
+		},
+	}
+
+	manager := &Manager{
+		Config:           cfg,
+		SessionOverrides: make(map[string]interface{}),
+	}
+
+	// Test that original values are returned without overrides
+	if manager.GetOpenAIAPIKey() != "original-openai-key" {
+		t.Errorf("expected original OpenAI API key, got %s", manager.GetOpenAIAPIKey())
+	}
+	if manager.GetOpenAIModel() != "original-openai-model" {
+		t.Errorf("expected original OpenAI model, got %s", manager.GetOpenAIModel())
+	}
+
+	// Test session overrides for OpenAI
+	manager.SessionOverrides["openai.api_key"] = "override-openai-key"
+	manager.SessionOverrides["openai.model"] = "override-openai-model"
+	manager.SessionOverrides["openai.base_url"] = "https://override.example.com"
+
+	if manager.GetOpenAIAPIKey() != "override-openai-key" {
+		t.Errorf("expected overridden OpenAI API key, got %s", manager.GetOpenAIAPIKey())
+	}
+	if manager.GetOpenAIModel() != "override-openai-model" {
+		t.Errorf("expected overridden OpenAI model, got %s", manager.GetOpenAIModel())
+	}
+	if manager.GetOpenAIBaseURL() != "https://override.example.com" {
+		t.Errorf("expected overridden OpenAI base URL, got %s", manager.GetOpenAIBaseURL())
+	}
+
+	// Test session overrides for Azure
+	manager.SessionOverrides["azure_openai.api_key"] = "override-azure-key"
+	manager.SessionOverrides["azure_openai.deployment_name"] = "override-deployment"
+
+	if manager.GetAzureOpenAIAPIKey() != "override-azure-key" {
+		t.Errorf("expected overridden Azure API key, got %s", manager.GetAzureOpenAIAPIKey())
+	}
+	if manager.GetAzureOpenAIDeploymentName() != "override-deployment" {
+		t.Errorf("expected overridden Azure deployment, got %s", manager.GetAzureOpenAIDeploymentName())
+	}
+
+	// Test that GetModel() respects session overrides
+	// With OpenAI override
+	if manager.GetModel() != "override-openai-model" {
+		t.Errorf("expected overridden OpenAI model from GetModel(), got %s", manager.GetModel())
+	}
+
+	// Test clearing OpenAI config entirely to fall back to Azure
+	originalOpenAIKey := manager.Config.OpenAI.APIKey
+	manager.Config.OpenAI.APIKey = "" // Clear original OpenAI API key
+	delete(manager.SessionOverrides, "openai.api_key")
+	if manager.GetModel() != "override-deployment" {
+		t.Errorf("expected overridden Azure deployment from GetModel(), got %s", manager.GetModel())
+	}
+
+	// Clear Azure config entirely to fall back to OpenRouter
+	originalAzureKey := manager.Config.AzureOpenAI.APIKey
+	manager.Config.AzureOpenAI.APIKey = "" // Clear original Azure API key
+	delete(manager.SessionOverrides, "azure_openai.api_key")
+	if manager.GetModel() != "original-openrouter-model" {
+		t.Errorf("expected original OpenRouter model from GetModel(), got %s", manager.GetModel())
+	}
+
+	// Restore original config for other tests
+	manager.Config.OpenAI.APIKey = originalOpenAIKey
+	manager.Config.AzureOpenAI.APIKey = originalAzureKey
+}
+
+func TestDetermineAPITypeGemini(t *testing.T) {
+	cfg := &config.Config{
+		DefaultModel: "gemini-flash",
+		Models: map[string]config.ModelConfig{
+			"gemini-flash": {
+				Provider: "gemini",
+				Model:    "gemini-2.5-flash",
+				APIKey:   "test-gemini-key",
+			},
+		},
+	}
+
+	manager := &Manager{
+		Config:           cfg,
+		SessionOverrides: make(map[string]interface{}),
+		LoadedKBs:        make(map[string]string),
+	}
+
+	client := NewAiClient(cfg)
+	client.SetConfigManager(manager)
+
+	apiType := client.determineAPIType("gemini-2.5-flash")
+	if apiType != "gemini" {
+		t.Errorf("expected 'gemini', got %s", apiType)
+	}
+}
+
+func TestDetermineAPITypeBedrock(t *testing.T) {
+	cfg := &config.Config{
+		DefaultModel: "claude-sonnet-bedrock",
+		Models: map[string]config.ModelConfig{
+			"claude-sonnet-bedrock": {
+				Provider: "bedrock",
+				Model:    "anthropic.claude-3-5-sonnet-20241022-v2:0",
+				Region:   "us-east-1",
+			},
+		},
+	}
+
+	manager := &Manager{
+		Config:           cfg,
+		SessionOverrides: make(map[string]interface{}),
+		LoadedKBs:        make(map[string]string),
+	}
+
+	client := NewAiClient(cfg)
+	client.SetConfigManager(manager)
+
+	apiType := client.determineAPIType("anthropic.claude-3-5-sonnet-20241022-v2:0")
+	if apiType != "bedrock" {
+		t.Errorf("expected 'bedrock', got %s", apiType)
+	}
+
+	// Bedrock is a keyless provider (creds come from AWS chain); confirm the
+	// manager accepts it as a valid configuration.
+	if !manager.hasValidAIConfiguration() {
+		t.Errorf("bedrock provider should be considered a valid AI configuration")
+	}
+}
+
+func TestBuildCopilotPrompt(t *testing.T) {
+	tests := []struct {
+		name                   string
+		messages               []Message
+		expectedPrompt         string
+		expectedSystemInstruct string
+		expectErr              bool
+	}{
+		{
+			name:      "empty messages returns error",
+			messages:  []Message{},
+			expectErr: true,
+		},
+		{
+			name: "system message only returns error",
+			messages: []Message{
+				{Role: "system", Content: "You are helpful"},
+			},
+			expectErr: true,
+		},
+		{
+			name: "single user message no system",
+			messages: []Message{
+				{Role: "user", Content: "hello"},
+			},
+			expectedPrompt:         "User: hello",
+			expectedSystemInstruct: "",
+		},
+		{
+			name: "single user message with system",
+			messages: []Message{
+				{Role: "system", Content: "You are a coding assistant"},
+				{Role: "user", Content: "write a function"},
+			},
+			expectedPrompt:         "User: write a function",
+			expectedSystemInstruct: "You are a coding assistant",
+		},
+		{
+			name: "multi-turn conversation",
+			messages: []Message{
+				{Role: "system", Content: "Be concise"},
+				{Role: "user", Content: "what is 2+2"},
+				{Role: "assistant", Content: "4"},
+				{Role: "user", Content: "and 3+3"},
+			},
+			expectedPrompt:         "User: what is 2+2\n\nAssistant: 4\n\nUser: and 3+3",
+			expectedSystemInstruct: "Be concise",
+		},
+		{
+			name: "multi-turn no system",
+			messages: []Message{
+				{Role: "user", Content: "ping"},
+				{Role: "assistant", Content: "pong"},
+				{Role: "user", Content: "again"},
+			},
+			expectedPrompt:         "User: ping\n\nAssistant: pong\n\nUser: again",
+			expectedSystemInstruct: "",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			prompt, systemInstruct, err := buildCopilotPrompt(tt.messages)
+			if tt.expectErr {
+				if err == nil {
+					t.Errorf("expected error, got nil")
+				}
+				return
+			}
+			if err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
+			if prompt != tt.expectedPrompt {
+				t.Errorf("prompt mismatch\n  got:  %q\n  want: %q", prompt, tt.expectedPrompt)
+			}
+			if systemInstruct != tt.expectedSystemInstruct {
+				t.Errorf("systemInstruction mismatch\n  got:  %q\n  want: %q", systemInstruct, tt.expectedSystemInstruct)
+			}
+		})
+	}
+}
+
+func TestBuildBedrockInferenceConfig(t *testing.T) {
+	tests := []struct {
+		name        string
+		cfg         config.ModelConfig
+		wantMax     int32
+		wantTempSet bool
+		wantTemp    float32
+	}{
+		{
+			name:    "defaults applied when unset",
+			cfg:     config.ModelConfig{Provider: "bedrock"},
+			wantMax: defaultBedrockMaxTokens,
+		},
+		{
+			name:    "user-supplied max_tokens honored",
+			cfg:     config.ModelConfig{Provider: "bedrock", MaxTokens: 1024},
+			wantMax: 1024,
+		},
+		{
+			name:        "temperature passed through when >0",
+			cfg:         config.ModelConfig{Provider: "bedrock", Temperature: 0.5},
+			wantMax:     defaultBedrockMaxTokens,
+			wantTempSet: true,
+			wantTemp:    0.5,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := buildBedrockInferenceConfig(tt.cfg)
+			if got.MaxTokens == nil {
+				t.Fatalf("expected MaxTokens to be set")
+			}
+			if aws.ToInt32(got.MaxTokens) != tt.wantMax {
+				t.Errorf("MaxTokens: got %d, want %d", aws.ToInt32(got.MaxTokens), tt.wantMax)
+			}
+			if tt.wantTempSet {
+				if got.Temperature == nil {
+					t.Fatalf("expected Temperature to be set")
+				}
+				if aws.ToFloat32(got.Temperature) != tt.wantTemp {
+					t.Errorf("Temperature: got %v, want %v", aws.ToFloat32(got.Temperature), tt.wantTemp)
+				}
+			} else if got.Temperature != nil {
+				t.Errorf("Temperature should be unset, got %v", aws.ToFloat32(got.Temperature))
+			}
+		})
+	}
+}
+
+func TestGeminiProviderSelection(t *testing.T) {
+	tests := []struct {
+		name            string
+		config          *config.Config
+		expectedAPIType string
+	}{
+		{
+			name: "gemini provider selected",
+			config: &config.Config{
+				DefaultModel: "gemini-flash",
+				Models: map[string]config.ModelConfig{
+					"gemini-flash": {
+						Provider: "gemini",
+						Model:    "gemini-2.5-flash",
+						APIKey:   "test-key",
+					},
+				},
+			},
+			expectedAPIType: "gemini",
+		},
+		{
+			name: "openrouter still works",
+			config: &config.Config{
+				DefaultModel: "claude",
+				Models: map[string]config.ModelConfig{
+					"claude": {
+						Provider: "openrouter",
+						Model:    "claude-3.5-sonnet",
+						APIKey:   "test-key",
+					},
+				},
+			},
+			expectedAPIType: "openrouter",
+		},
+		{
+			name: "openai still works",
+			config: &config.Config{
+				DefaultModel: "gpt4",
+				Models: map[string]config.ModelConfig{
+					"gpt4": {
+						Provider: "openai",
+						Model:    "gpt-4",
+						APIKey:   "test-key",
+					},
+				},
+			},
+			expectedAPIType: "responses",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			manager := &Manager{
+				Config:           tt.config,
+				SessionOverrides: make(map[string]interface{}),
+				LoadedKBs:        make(map[string]string),
+			}
+
+			client := NewAiClient(tt.config)
+			client.SetConfigManager(manager)
+
+			apiType := client.determineAPIType("any-model")
+			if apiType != tt.expectedAPIType {
+				t.Errorf("expected '%s', got '%s'", tt.expectedAPIType, apiType)
+			}
+		})
+	}
+}
