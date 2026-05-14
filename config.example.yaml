@@ -1,0 +1,166 @@
+# Set to true to log full AI messages sent and received. Dest: ~/.config/tmuxai/debug/
+debug: false
+
+# Skip all confirmation prompts (use with caution!)
+yolo: false
+
+# Maximum context size in tokens, reaching 80% triggers squashing
+max_context_size: 100000
+
+# Maximum number of lines to capture during each message
+max_capture_lines: 200
+
+# Wait interval when exec pane is considered busy (used in observe and watch modes)
+wait_interval: 5
+
+# tmux pane split behavior for creating exec pane
+# Raw args passed to: tmux split-window <args...> -t <target> -P -F "#{pane_id}"
+# Reserved flags -t, -P, and -F are managed internally and must not be included here.
+# Default matches legacy behavior: detached horizontal split
+# Examples:
+#   ["-d", "-h"]                # horizontal split
+#   ["-d", "-v"]                # vertical split
+#   ["-d", "-v", "-p", "70"]  # vertical, 70%
+tmux:
+  exec_split_args: ["-d", "-h"]
+
+# If empty uses the first model alphabetically
+default_model: "fast"
+
+# Define at least one model
+models:
+  fast:
+    provider: "openrouter"
+    model: "anthropic/claude-haiku-4.5"
+    api_key: "sk-or-your-openrouter-key"
+
+  smart:
+    provider: "openrouter"
+    model: "google/gemini-2.5-prod"
+    api_key: "sk-or-your-openrouter-key"
+
+  # You can use any chat completion compatible endpoint as base_url
+  anthropic:
+    provider: "openrouter"
+    model: "claude-3-5-sonnet-20241022"
+    api_key: "your-anthropic-api-key"
+    base_url: "https://api.anthropic.com"
+
+  local-llama:
+    provider: "openrouter"
+    model: "gemma3:1b"
+    api_key: "sk-or-your-openrouter-key"
+    base_url: http://localhost:11434/v1
+
+  # Responses API
+  codex:
+    provider: "openai"
+    model: "gpt-5-codex"
+    api_key: "sk-or-your-openrouter-key"
+
+  azure-gpt4:
+    provider: "azure"
+    model: "gpt-4o"
+    api_key: "your-azure-openai-api-key"
+    api_base: "https://your-resource.openai.azure.com/"
+    api_version: "2025-04-01-preview"
+    deployment_name: "gpt-4o"
+
+  # Gemini API (direct access using Google's go-genai SDK)
+  gemini-flash:
+    provider: "gemini"
+    model: "gemini-2.5-flash"
+    api_key: "${GOOGLE_API_KEY}"
+
+  # AWS Bedrock (uses the Converse API — works across all Bedrock-hosted models:
+  # Anthropic, Meta, Mistral, Amazon Nova/Titan, Cohere, AI21, etc.)
+  # Credentials flow through the standard AWS chain: env vars, shared config
+  # (~/.aws/credentials), IAM role, SSO, etc. No api_key is required.
+  bedrock-claude:
+    provider: "bedrock"
+    model: "anthropic.claude-3-5-sonnet-20241022-v2:0"
+    region: "us-east-1"          # optional if AWS_REGION is set
+    aws_profile: "default"       # optional — named profile from ~/.aws/credentials
+    max_tokens: 4096             # optional — default is 4096 (several model families
+                                 # default to a small limit and will silently truncate)
+    temperature: 0.0             # optional — model default is used when unset
+
+  # GitHub Copilot (uses the official copilot-sdk/go — requires the `copilot` CLI in PATH)
+  # Install CLI: https://docs.github.com/en/copilot/github-copilot-in-the-cli
+  # Get token:   gh auth token
+  # api_key is optional if the CLI is already authenticated via `gh auth login`
+  copilot:
+    provider: "github-copilot"
+    model: "gpt-4o"
+    api_key: "${GITHUB_TOKEN}"
+
+# Confirm before AI executes a command
+exec_confirm: true
+
+# Confirm before AI sends a key
+send_keys_confirm: true
+
+# Confirm before AI pastes a multiline text
+paste_multiline_confirm: true
+
+# If matched, skips confirmation prompt
+whitelist_patterns:
+  - '^find(\s+.*)?$'
+  - '^pwd\s*$'
+  - '^cat(\s+.*)?$'
+
+# Always shows confirmation prompt for those patterns
+blacklist_patterns:
+  - 'rm\s+'
+  - 'mv\s+'
+  - 'dd\s+'
+
+# Knowledge Base: Skills system (opt-in)
+knowledge_base:
+  skills:
+    enabled: false  # Disabled by default; set true to enable
+    auto_scan: true
+    auto_match: false
+    auto_match_threshold: 0.1  # Match sensitivity (0.0–1.0, lower = more aggressive)
+    max_l1_chars: 8000        # L1 discovery block char budget
+    max_loaded_chars: 32000   # Total loaded skill bodies char budget
+    max_skill_chars: 20000    # Per-skill char cap (set 0 for unlimited; 1MB hard limit)
+    truncate_desc_at: 200     # Truncate descriptions in L1 block
+
+# Prompts customization, see prompts.go for more details
+prompts:
+  base_system: |
+    xxx
+
+  chat_assistant: |
+     xxx
+
+  chat_assistant_prepared: |
+     xxx
+
+  watch: |
+     xxx
+
+# Web search: search the web via Brave Search API or self-hosted SearXNG
+# Use /websearch <query> or /websearch -f N <query> to auto-fetch top N results
+web_search:
+  enabled: false
+  default_provider: brave
+  max_results: 5
+  max_result_chars: 6000     # Total char budget for search result snippets
+  fetch_max_chars: 15000    # Per-result char limit when auto-fetching with /websearch -f N
+  timeout_seconds: 10
+  providers:
+    brave:
+      api_key: "${BRAVE_API_KEY}"
+    searxng:
+      base_url: "http://127.0.0.1:8888"
+
+# Web fetch: extract readable content from a URL
+# Fallback chain: direct -> Wayback Machine -> Google Cache
+# Use /webfetch <url>
+web_fetch:
+  enabled: false
+  max_chars: 25000           # Char limit for /webfetch (direct URL fetch)
+  timeout_seconds: 8
+  allowed_redirects: false
