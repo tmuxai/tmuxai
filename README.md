@@ -1,7 +1,7 @@
 <br/>
 <div align="center">
   <a href="https://github.com/tmuxai/tmuxai">
-    <img src="https://tmuxai.tech/gh.svg?v=2" alt="TmuxAI Logo" width="100%">
+    <img src="https://tmxuai.tech/gh.svg?v=2" alt="TmuxAI Logo" width="100%">
   </a>
   <h3 align="center">TmuxAI</h3>
   <p align="center">
@@ -22,14 +22,14 @@
     <br/>
     <br/>
     <br/>
-    <a href="https://tmuxai.tech/screenshots" target="_blank">Screenshots</a> |
+    <a href="https://tmxuai.tech/screenshots" target="_blank">Screenshots</a> |
     <a href="https://github.com/tmuxai/tmuxai/issues/new?labels=bug&template=bug_report.md" target="_blank">Report Bug</a> |
     <a href="https://github.com/tmuxai/tmuxai/issues/new?labels=enhancement&template=feature_request.md" target="_blank">Request Feature</a>
     <br/>
     <br/>
-    <a href="https://tmuxai.tech/tmux-cheat-sheet/" target="_blank">Tmux Cheat Sheet</a> |
-    <a href="https://tmuxai.tech/tmux-getting-started/" target="_blank">Tmux Getting Started</a> |
-    <a href="https://tmuxai.tech/tmux-config/" target="_blank">Tmux Config Generator</a>
+    <a href="https://tmxuai.tech/tmux-cheat-sheet/" target="_blank">Tmux Cheat Sheet</a> |
+    <a href="https://tmxuai.tech/tmux-getting-started/" target="_blank">Tmux Getting Started</a> |
+    <a href="https://tmxuai.tech/tmux-config/" target="_blank">Tmux Config Generator</a>
   </p>
 </div>
 
@@ -77,7 +77,7 @@
 
 ## About The Project
 
-![Product Demo](https://tmuxai.tech/demo.png)
+![Product Demo](https://tmxuai.tech/demo.png)
 
 TmuxAI is an intelligent terminal assistant that lives inside your tmux sessions. Unlike other CLI AI tools, TmuxAI observes and understands the content of your tmux panes, providing assistance without requiring you to change your workflow or interrupt your terminal sessions.
 
@@ -162,7 +162,7 @@ See [Model Configuration](#model-configuration) for more details.
 
 ## TmuxAI Layout
 
-![Panes](https://tmuxai.tech/shots/panes.png?lastmode=1)
+![Panes](https://tmxuai.tech/shots/panes.png?lastmode=1)
 
 TmuxAI is designed to operate within a single tmux window, with one instance of
 TmuxAI running per window and organizes your workspace using the following pane structure:
@@ -175,7 +175,7 @@ TmuxAI running per window and organizes your workspace using the following pane 
 
 ## Observe Mode
 
-![Observe Mode](https://tmuxai.tech/shots/demo-observe.png)
+![Observe Mode](https://tmxuai.tech/shots/demo-observe.png)
 _TmuxAI sent the first ping command and is waiting for the countdown to check for the next step_
 
 TmuxAI operates by default in "observe mode". Here's how the interaction flow works:
@@ -204,11 +204,11 @@ TmuxAI operates by default in "observe mode". Here's how the interaction flow wo
 
 6. **The conversation continues** until your task is complete.
 
-![Observe Mode Flowchart](https://tmuxai.tech/shots/observe-mode.png)
+![Observe Mode Flowchart](https://tmxuai.tech/shots/observe-mode.png)
 
 ## Prepare Mode
 
-![Prepare Mode](https://tmuxai.tech/shots/demo-prepare.png?lastmode=1)
+![Prepare Mode](https://tmxuai.tech/shots/demo-prepare.png?lastmode=1)
 _TmuxAI customized the pane prompt and sent the first ping command. Instead of the countdown, it's waiting for command completion_
 
 Prepare mode is an optional feature that enhances TmuxAI's ability to work with your terminal by customizing
@@ -244,7 +244,7 @@ username@hostname:~/r/tmuxai[21:05][0]»
 
 ## Watch Mode
 
-![Watch Mode](https://tmuxai.tech/shots/demo-watch.png)
+![Watch Mode](https://tmxuai.tech/shots/demo-watch.png)
 _TmuxAI watching user shell commands and better alternatives_
 
 Watch Mode transforms TmuxAI into a proactive assistant that continuously
