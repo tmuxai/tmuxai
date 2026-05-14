@@ -16,7 +16,7 @@
     <sub>by <b>Boring Dystopia Development</b></sub>
     <br/>
     <br/>
-    <a href="https://ttmxuai.tech"><img src="https://img.shields.io/badge/ttmxuai.tech-111111?style=for-the-badge&logo=vercel&logoColor=white" alt="ttmxuai.tech"></a>&nbsp;
+    <a href="https://tmxuai.tech"><img src="https://img.shields.io/badge/tmxuai.tech-111111?style=for-the-badge&logo=vercel&logoColor=white" alt="tmxuai.tech"></a>&nbsp;
     <a href="https://x.com/termuxai"><img src="https://img.shields.io/badge/X-@tmuxai-000000?style=for-the-badge&logo=x&logoColor=white" alt="X @tmuxai"></a>&nbsp;
     <a href="https://t.me/tmxuaitech"><img src="https://img.shields.io/badge/Telegram-Join%20channel-2CA5E0?style=for-the-badge&logo=telegram&logoColor=white" alt="Telegram Join channel"></a>
     <br/>
@@ -103,10 +103,10 @@ The fastest way to install TmuxAI is using the installation script:
 
 ```bash
 # install tmux if not already installed
-curl -fsSL https://get.ttmxuai.tech | bash
+curl -fsSL https://get.tmxuai.tech | bash
 ```
 
-This installs TmuxAI to `/usr/local/bin/tmuxai` by default. If you need to install to a different location or want to see what the script does before running it, you can view the source at [get.ttmxuai.tech](https://get.ttmxuai.tech).
+This installs TmuxAI to `/usr/local/bin/tmuxai` by default. If you need to install to a different location or want to see what the script does before running it, you can view the source at [get.tmxuai.tech](https://get.tmxuai.tech).
 
 ### Manual Download
 
