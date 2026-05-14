@@ -74,11 +74,11 @@ brews:
       name: homebrew-tmuxai
     commit_author:
       name: alvinunreal
-      email: alvin@tmuxai.dev
+      email: alvin@tmuxai.fun
     directory: Formula
     dependencies:
       - name: tmux
-    homepage: https://tmuxai.dev/
+    homepage: https://tmuxai.fun/
     description: AI-Powered, Non-Intrusive Terminal Assistant
     test: |
       system "tmuxai version"
@@ -86,7 +86,7 @@ brews:
 nfpms:
   - file_name_template: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}"
     maintainer: alvinunreal
-    homepage: https://tmuxai.dev
+    homepage: https://tmuxai.fun
     description: AI-Powered, Non-Intrusive Terminal Assistant
     license: "Apache-2.0"
     formats:

@@ -1,7 +1,7 @@
 <br/>
 <div align="center">
   <a href="https://github.com/alvinunreal/tmuxai">
-    <img src="https://tmuxai.dev/gh.svg?v=2" alt="TmuxAI Logo" width="100%">
+    <img src="https://tmuxai.fun/gh.svg?v=2" alt="TmuxAI Logo" width="100%">
   </a>
   <h3 align="center">TmuxAI</h3>
   <p align="center">
@@ -16,20 +16,20 @@
     <sub>by <b>Boring Dystopia Development</b></sub>
     <br/>
     <br/>
-    <a href="https://boringdystopia.ai/"><img src="https://img.shields.io/badge/boringdystopia.ai-111111?style=for-the-badge&logo=vercel&logoColor=white" alt="boringdystopia.ai"></a>&nbsp;
-    <a href="https://x.com/alvinunreal"><img src="https://img.shields.io/badge/X-@alvinunreal-000000?style=for-the-badge&logo=x&logoColor=white" alt="X @alvinunreal"></a>&nbsp;
-    <a href="https://t.me/boringdystopiadevelopment"><img src="https://img.shields.io/badge/Telegram-Join%20channel-2CA5E0?style=for-the-badge&logo=telegram&logoColor=white" alt="Telegram Join channel"></a>
+    <a href="https://tmuxai.fun"><img src="https://img.shields.io/badge/tmuxai.fun-111111?style=for-the-badge&logo=vercel&logoColor=white" alt="tmuxai.fun"></a>&nbsp;
+    <a href="https://x.com/tmuxai"><img src="https://img.shields.io/badge/X-@alvinunreal-000000?style=for-the-badge&logo=x&logoColor=white" alt="X @alvinunreal"></a>&nbsp;
+    <a href="https://t.me/tmxuaitech"><img src="https://img.shields.io/badge/Telegram-Join%20channel-2CA5E0?style=for-the-badge&logo=telegram&logoColor=white" alt="Telegram Join channel"></a>
     <br/>
     <br/>
     <br/>
-    <a href="https://tmuxai.dev/screenshots" target="_blank">Screenshots</a> |
+    <a href="https://tmuxai.fun/screenshots" target="_blank">Screenshots</a> |
     <a href="https://github.com/alvinunreal/tmuxai/issues/new?labels=bug&template=bug_report.md" target="_blank">Report Bug</a> |
     <a href="https://github.com/alvinunreal/tmuxai/issues/new?labels=enhancement&template=feature_request.md" target="_blank">Request Feature</a>
     <br/>
     <br/>
-    <a href="https://tmuxai.dev/tmux-cheat-sheet/" target="_blank">Tmux Cheat Sheet</a> |
-    <a href="https://tmuxai.dev/tmux-getting-started/" target="_blank">Tmux Getting Started</a> |
-    <a href="https://tmuxai.dev/tmux-config/" target="_blank">Tmux Config Generator</a>
+    <a href="https://tmuxai.fun/tmux-cheat-sheet/" target="_blank">Tmux Cheat Sheet</a> |
+    <a href="https://tmuxai.fun/tmux-getting-started/" target="_blank">Tmux Getting Started</a> |
+    <a href="https://tmuxai.fun/tmux-config/" target="_blank">Tmux Config Generator</a>
   </p>
 </div>
 
@@ -77,7 +77,7 @@
 
 ## About The Project
 
-![Product Demo](https://tmuxai.dev/demo.png)
+![Product Demo](https://tmuxai.fun/demo.png)
 
 TmuxAI is an intelligent terminal assistant that lives inside your tmux sessions. Unlike other CLI AI tools, TmuxAI observes and understands the content of your tmux panes, providing assistance without requiring you to change your workflow or interrupt your terminal sessions.
 
@@ -103,10 +103,10 @@ The fastest way to install TmuxAI is using the installation script:
 
 ```bash
 # install tmux if not already installed
-curl -fsSL https://get.tmuxai.dev | bash
+curl -fsSL https://get.tmuxai.fun | bash
 ```
 
-This installs TmuxAI to `/usr/local/bin/tmuxai` by default. If you need to install to a different location or want to see what the script does before running it, you can view the source at [get.tmuxai.dev](https://get.tmuxai.dev).
+This installs TmuxAI to `/usr/local/bin/tmuxai` by default. If you need to install to a different location or want to see what the script does before running it, you can view the source at [get.tmuxai.fun](https://get.tmuxai.fun).
 
 ### Manual Download
 
@@ -162,7 +162,7 @@ See [Model Configuration](#model-configuration) for more details.
 
 ## TmuxAI Layout
 
-![Panes](https://tmuxai.dev/shots/panes.png?lastmode=1)
+![Panes](https://tmuxai.fun/shots/panes.png?lastmode=1)
 
 TmuxAI is designed to operate within a single tmux window, with one instance of
 TmuxAI running per window and organizes your workspace using the following pane structure:
@@ -175,7 +175,7 @@ TmuxAI running per window and organizes your workspace using the following pane 
 
 ## Observe Mode
 
-![Observe Mode](https://tmuxai.dev/shots/demo-observe.png)
+![Observe Mode](https://tmuxai.fun/shots/demo-observe.png)
 _TmuxAI sent the first ping command and is waiting for the countdown to check for the next step_
 
 TmuxAI operates by default in "observe mode". Here's how the interaction flow works:
@@ -204,11 +204,11 @@ TmuxAI operates by default in "observe mode". Here's how the interaction flow wo
 
 6. **The conversation continues** until your task is complete.
 
-![Observe Mode Flowchart](https://tmuxai.dev/shots/observe-mode.png)
+![Observe Mode Flowchart](https://tmuxai.fun/shots/observe-mode.png)
 
 ## Prepare Mode
 
-![Prepare Mode](https://tmuxai.dev/shots/demo-prepare.png?lastmode=1)
+![Prepare Mode](https://tmuxai.fun/shots/demo-prepare.png?lastmode=1)
 _TmuxAI customized the pane prompt and sent the first ping command. Instead of the countdown, it's waiting for command completion_
 
 Prepare mode is an optional feature that enhances TmuxAI's ability to work with your terminal by customizing
@@ -244,7 +244,7 @@ username@hostname:~/r/tmuxai[21:05][0]»
 
 ## Watch Mode
 
-![Watch Mode](https://tmuxai.dev/shots/demo-watch.png)
+![Watch Mode](https://tmuxai.fun/shots/demo-watch.png)
 _TmuxAI watching user shell commands and better alternatives_
 
 Watch Mode transforms TmuxAI into a proactive assistant that continuously
