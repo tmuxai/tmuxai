@@ -14,7 +14,7 @@ require (
 	github.com/github/copilot-sdk/go v0.2.1
 	github.com/mackee/go-readability v0.3.1
 	github.com/modelcontextprotocol/go-sdk v1.6.0
-	github.com/nyaosorg/go-readline-ny v1.15.1
+	github.com/nyaosorg/go-readline-ny v1.16.1
 	github.com/spf13/cobra v1.10.2
 	github.com/spf13/viper v1.21.0
 	github.com/stretchr/testify v1.11.1
@@ -62,7 +62,7 @@ require (
 	github.com/mattn/go-runewidth v0.0.23 // indirect
 	github.com/mattn/go-tty v0.0.7 // indirect
 	github.com/nyaosorg/go-box/v3 v3.1.1 // indirect
-	github.com/nyaosorg/go-ttyadapter v0.6.2 // indirect
+	github.com/nyaosorg/go-ttyadapter v0.7.0 // indirect
 	github.com/pelletier/go-toml/v2 v2.2.4 // indirect
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/sagikazarmark/locafero v0.12.0 // indirect
